@@ -1,0 +1,12 @@
+dagster
+dagster-webserver
+dagster-graphql
+pyspark==3.5.1
+pymongo
+pyodbc
+pandas
+requests
+dash
+jupyterlab
+ipykernel
+plotly

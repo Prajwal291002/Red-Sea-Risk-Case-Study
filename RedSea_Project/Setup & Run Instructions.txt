@@ -1,0 +1,143 @@
+Red Sea Risk Radar - Setup & Execution Guide
+
+
+Prerequisites
+
+Before you begin, ensure you have the following installed on your system:
+
+Docker Desktop:
+
+Installation: Download and install from docker.com.
+
+Verification: Open a terminal and run docker --version. It should return a version number. Ensure Docker Desktop is running.
+
+
+Step 1: Project Initialization
+
+Create a Project Directory:
+
+
+Open your terminal (Command Prompt or PowerShell on Windows).
+
+Navigate to your user directory: cd C:\Users\YourUsername\
+
+Create a folder named RedSea_Project: mkdir RedSea_Project
+
+Enter the folder: cd RedSea_Project
+
+File Structure Setup:
+
+Create the following folders and files inside RedSea_Project. Your final structure should look exactly like this:
+
+RedSea_Project/
+│
+├── docker-compose.yaml          # Orchestrates all services
+├── Dockerfile                   # Defines the main Python/Java environment
+├── dagster.yaml                 # Configures Dagster
+├── requirements.txt             # Python dependencies
+│
+├── jobs/                        # [Folder] Pipeline Code
+│   ├── repo.py                  # Main Dagster repository
+│   ├── mine_gdelt_final.py      # GDELT mining script
+│   ├── upsample_rates_only.py   # Data upsampling script
+│   └── rates.csv                # (You will create this manually)
+│
+└── dashboard/                   # [Folder] Dashboard App
+    ├── Dockerfile               # Specific Dockerfile for Dashboard
+    └── dashboard_app.py         # Streamlit App Code
+
+
+
+Step 2: Data Acquisition (One-Time Run)
+
+Before running the full pipeline, we need to generate our two primary datasets: News (Automated) and Rates (Manual).
+
+Start the Infrastructure:
+
+In your terminal (inside RedSea_Project), run:
+
+docker-compose up 
+
+
+Wait about 2-3 minutes for SQL Server and all containers to initialize.
+
+Create the Rates File (Manual):
+
+This file is present in the submitted zip file
+
+Mine the News Data (Automated):
+
+In your terminal, run this command to execute the mining script inside the container:
+
+docker exec -it redsea_processor python jobs/mine_gdelt_final.py
+
+or 
+inside the jobs folder open cmd and run :
+
+python mine_gdelt_final.py
+
+
+Result: A file named historical_news_raw.csv will be created in the jobs/ folder. This contains ~3,000 real news articles.
+
+
+Upsample the Rates Data (Automated):
+
+Run this command to convert your small weekly rates file into a large hourly dataset:
+
+docker exec -it redsea_processor python jobs/upsample_rates_only.py
+
+A file named upsampled_rates.csv will be created in the jobs/ folder.
+
+Step 3: Execute the Data Pipeline
+
+Now that the source data is ready, we use Dagster to process it.
+
+Open Dagster UI:
+
+Go to your web browser and navigate to: http://localhost:3000
+
+Load Definitions:
+
+Click the "Reload Definitions" button (top right) to ensure Dagster sees your latest code.
+
+Run the Pipeline:
+
+Click "Assets" in the top-left navigation menu.
+
+Click the "Materialize All" button (top right).
+
+Monitor: Watch the execution. You should see three assets turn green:
+
+ingest_news_to_mongo (Loads JSON to MongoDB)
+
+ingest_rates_to_sql (Loads CSV to SQL Server)
+
+transform_data_with_spark (Joins data and writes Gold Table)
+
+
+Step 4: View the Dashboard
+
+Once the pipeline is complete (Green), your data is ready for analysis.
+
+Open Dashboard:
+
+Navigate to: http://localhost:8501
+
+Interact:
+
+Use the date picker in the sidebar to zoom into the crisis period (e.g., Dec 2023).
+
+Observe the "Lag Effect" on the main chart.
+
+
+Step 5: Shutdown & Cleanup
+
+When you are finished presenting or working:
+
+Stop Containers:
+
+In your terminal, run:
+
+docker-compose down
+
+

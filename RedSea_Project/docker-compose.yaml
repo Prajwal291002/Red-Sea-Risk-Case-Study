@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  dagster_app:
+    build: .
+    container_name: redsea_processor
+    ports:
+      - "3000:3000" # Dagster UI
+      - "8888:8888" # Jupyter Lab
+    volumes:
+      - ./jobs:/opt/dagster/app/jobs
+    # --- ADD THIS COMMAND LINE EXPLICITLY ---
+    command: dagster dev -h 0.0.0.0 -p 3000 -f jobs/repo.py
+    # ----------------------------------------
+    environment:
+      - DAGSTER_POSTGRES_USER=postgres
+      - DAGSTER_POSTGRES_PASSWORD=postgres
+      - DAGSTER_POSTGRES_DB=postgres_dagster
+    depends_on:
+      - sql_server
+      - mongo_db
+
+  sql_server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server_container
+    user: root
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=MyComplexPassword123!
+    ports:
+      - "1433:1433"
+
+  mongo_db:
+    image: mongo:latest
+    container_name: mongo_container
+    ports:
+      - "27017:27017"
+  
+  
+  
+  dashboard_ui:
+    build: ./dashboard  
+    container_name: redsea_dashboard
+    ports:
+      - "8501:8501"    
+    depends_on:
+      - sql_server      
+    environment:
+      - PYTHONUNBUFFERED=1
