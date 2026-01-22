@@ -8,7 +8,7 @@ from plotly.subplots import make_subplots
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="Red Sea Risk Radar",
-    page_icon="🚢",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -50,7 +50,7 @@ def load_data():
         return df
 
     except Exception as e:
-        st.error(f"❌ Database Connection Error: {e}")
+        st.error(f"Database Connection Error: {e}")
         return pd.DataFrame()
 
 df = load_data()
@@ -60,7 +60,7 @@ if df.empty:
     st.stop()
 
 # --- 2. SIDEBAR CONTROLS ---
-st.sidebar.header("⚙️ Control Panel")
+st.sidebar.header("Control Panel")
 st.sidebar.write("Filter the analysis window:")
 
 # Date Range Picker
@@ -94,7 +94,7 @@ if filtered_df.empty:
 # --- 3. MAIN DASHBOARD LAYOUT ---
 
 # Title Section
-st.title("🛑 Red Sea Risk Radar")
+st.title("Red Sea Risk Radar")
 st.markdown("""
 **Executive Control Tower:** Correlating unstructured geopolitical news signals with structured logistics financial data.
 This dashboard demonstrates the **Lag Effect** between conflict events and shipping price surges.
@@ -107,7 +107,7 @@ col1, col2, col3 = st.columns(3)
 # KPI 1: Peak Price
 max_price = filtered_df['Price'].max()
 col1.metric(
-    label="💰 Peak Shipping Rate ($/FEU)",
+    label="Peak Shipping Rate ($/FEU)",
     value=f"${max_price:,.0f}",
     delta=None
 )
@@ -115,7 +115,7 @@ col1.metric(
 # KPI 2: Total Events
 total_news = filtered_df['news_count'].sum()
 col2.metric(
-    label="📰 Total Conflict Events",
+    label="Total Conflict Events",
     value=f"{total_news:,.0f}",
     delta=None
 )
@@ -136,7 +136,7 @@ col3.metric(
 st.markdown("---")
 
 # --- CHART 1: MAIN TREND (Dual Axis) ---
-st.subheader("📈 Lag Analysis: News Signals vs. Market Reaction")
+st.subheader("Lag Analysis: News Signals vs. Market Reaction")
 
 fig_trend = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -178,7 +178,7 @@ st.plotly_chart(fig_trend, use_container_width=True)
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("🔥 The 'Panic Meter'")
+    st.subheader("The 'Panic Meter'")
     st.caption("Bubble Size = News Volume | Color = Price Level")
     
     fig_scatter = px.scatter(
@@ -196,7 +196,7 @@ with col_left:
     st.plotly_chart(fig_scatter, use_container_width=True)
 
 with col_right:
-    st.subheader("⚡ Risk Signal Volatility")
+    st.subheader("Risk Signal Volatility")
     st.caption("Cumulative pressure of the news cycle over time")
     
     fig_risk = px.line(
@@ -218,4 +218,5 @@ with col_right:
 
 # --- RAW DATA EXPANDER ---
 with st.expander("📂 View Raw Data Table"):
+
     st.dataframe(filtered_df.sort_values(by='full_date', ascending=False), use_container_width=True)
