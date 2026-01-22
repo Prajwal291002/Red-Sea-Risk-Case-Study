@@ -9,7 +9,6 @@ services:
       - "8888:8888" # Jupyter Lab
     volumes:
       - ./jobs:/opt/dagster/app/jobs
-    # --- ADD THIS COMMAND LINE EXPLICITLY ---
     command: dagster dev -h 0.0.0.0 -p 3000 -f jobs/repo.py
     # ----------------------------------------
     environment:
@@ -46,4 +45,5 @@ services:
     depends_on:
       - sql_server      
     environment:
+
       - PYTHONUNBUFFERED=1
