@@ -66,16 +66,13 @@ def ingest_news_to_mongo():
 @asset
 def ingest_rates_to_sql():
     """Ingest upsampled shipping rates from CSV into SQL Server."""
-    # POINT TO YOUR UPSAMPLED RATES
     df = pd.read_csv("/opt/dagster/app/jobs/upsampled_rates.csv")
 
-    # CRITICAL FIX: Convert Date to Python Datetime Objects for SQL
     df['Date'] = pd.to_datetime(df['Date'])
 
     conn = pyodbc.connect(SQL_CONN_STR)
     cursor = conn.cursor()
 
-    # Drop and Recreate Table with DATETIME type (to support hours)
     cursor.execute("""
         IF EXISTS (
             SELECT * FROM sysobjects
@@ -173,7 +170,7 @@ def transform_data_with_spark():
         to_date(df_rates.Date) == df_daily_news.event_date,
         how="inner"
     ).select(
-        df_rates.Date.alias("full_date"),  # Keep the Hourly timestamp!
+        df_rates.Date.alias("full_date"),  
         df_rates.Price,
         df_daily_news.news_count,
         df_daily_news.avg_conflict_score
@@ -207,4 +204,5 @@ defs = Definitions(
         ingest_rates_to_sql,
         transform_data_with_spark
     ]
+
 )
