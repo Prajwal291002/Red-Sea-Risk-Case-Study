@@ -104,7 +104,7 @@ def parse_and_write(
 
         try:
             if tone_str and tone_str.strip():
-                tone_val = float(tone_str)  # Use Real Data!
+                tone_val = float(tone_str)  
             else:
                 # Fallback
                 tone_val = random.gauss(-5.0, 2.0)
@@ -180,8 +180,9 @@ def main():
             time.sleep(0.5)  # Rate limit protection
             current += timedelta(days=1)
 
-    print(f"✅ Finished. Total Rows Mined: {global_id_counter - 100000}")
+    print(f"Total Rows Mined: {global_id_counter - 100000}")
 
 
 if __name__ == "__main__":
+
     main()
