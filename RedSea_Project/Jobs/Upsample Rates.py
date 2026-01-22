@@ -8,14 +8,14 @@ def upsample_rates():
     Read weekly rates data, upsample to hourly frequency using linear interpolation,
     add noise, and save the result to a CSV file.
     """
-    print("🚀 Starting Rates-Only Upsampling...")
+    print("Starting Rates-Only Upsampling...")
 
     # 1. READ WEEKLY RATES
-    # We assume rates.csv exists and contains the real weekly data
+    
     try:
         df_rates = pd.read_csv("rates.csv")
     except FileNotFoundError:
-        print("❌ Error: 'rates.csv' not found. Please create it first.")
+        print("Error: 'rates.csv' not found. Please create it first.")
         sys.exit(1)
 
     # 2. SETUP DATE INDEX
@@ -41,11 +41,12 @@ def upsample_rates():
     df_hourly.to_csv(output_file, index=False)
 
     print(
-        f"✅ SUCCESS: Expanded {len(df_rates)} weekly rows into "
+        f"SUCCESS: Expanded {len(df_rates)} weekly rows into "
         f"{len(df_hourly)} hourly rows."
     )
-    print(f"📁 Saved to: {output_file}")
+    print(f"Saved to: {output_file}")
 
 
 if __name__ == "__main__":
+
     upsample_rates()
